@@ -1,0 +1,73 @@
+*.py[cod]
+
+# C extensions
+*.so
+
+# Packages
+*.egg
+*.egg-info
+dist
+build
+eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.installed.cfg
+lib
+lib64
+
+# logs
+pip-log.txt
+log/*
+
+# docs inventories
+docs/*.inv
+
+# Docstrings
+doc_data.yaml
+
+# Unit test / coverage reports
+.coverage
+.tox
+
+# pytest cache
+.cache/
+
+nosetests.xml
+chromedriver.log
+pytest.ini
+
+# Translations
+*.mo
+
+# IDE settings
+.codeintel
+.mr.developer.cfg
+.project
+.pydevproject
+.settings
+.floo*
+.python-version
+.idea/
+
+# rendered documentation
+docs/_build
+docs/modules
+
+# Ipython notebooks need to be explicitly added
+notebooks/*
+
+# automation artifacts
+.jenkins*
+
+# pytest cache
+.cache/
+
+# *~ backup files
+*~
+
+# YAML Options
+# exclude conf
+conf/*.local.yaml

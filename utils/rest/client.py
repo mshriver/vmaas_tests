@@ -1,0 +1,192 @@
+# -*- coding: utf-8 -*-
+# pylint: disable=no-member
+"""
+VMaaS REST API client
+"""
+
+import logging
+
+from simple_rest_client.api import API as SimpleAPI
+from simple_rest_client.resource import Resource as SimpleResource
+
+import iso8601
+
+
+class QueryApiActions(SimpleResource):
+    actions = {
+        'get_cve': {'method': 'GET', 'url': 'cves/{}'},
+        'get_cves': {'method': 'POST', 'url': 'cves'},
+        'get_errata': {'method': 'GET', 'url': 'errata/{}'},
+        'get_erratas': {'method': 'POST', 'url': 'errata'},
+        'get_repo': {'method': 'GET', 'url': 'repos/{}'},
+        'get_repos': {'method': 'POST', 'url': 'repos'},
+        'get_update': {'method': 'GET', 'url': 'updates/{}'},
+        'get_updates': {'method': 'POST', 'url': 'updates'},
+    }
+
+
+class LoadApiActions(SimpleResource):
+    actions = {
+        'cvescan': {'method': 'GET', 'url': 'sync/cve'},
+        'reposcan': {'method': 'POST', 'url': 'sync/repo'},
+        'reporefresh': {'method': 'GET', 'url': 'sync/repo'},
+    }
+
+
+class VMaaSClient(object):
+    # pylint: disable=too-many-arguments
+    def __init__(self, address, port=8080, address2=None, port2=8081, logger=None):
+        self.logger = logger or logging.getLogger(__name__)
+        self.query_api = SimpleAPI(
+            api_root_url='http://{}:{}/api/v1/'.format(address, port),  # base api url
+            params={},  # default params
+            headers={},  # default headers
+            timeout=2,  # default timeout in seconds
+            append_slash=False,  # append slash to final url
+            json_encode_body=True,  # encode body as json
+        )
+        self.load_api = SimpleAPI(
+            api_root_url='http://{}:{}/api/v1/'.format(address2 or address, port2),
+            params={},
+            headers={},
+            timeout=2,
+            append_slash=False,
+            json_encode_body=True,
+        )
+
+        self.query_api.add_resource(resource_name='actions', resource_class=QueryApiActions)
+        self.load_api.add_resource(resource_name='actions', resource_class=LoadApiActions)
+
+        for action in QueryApiActions.actions:
+            setattr(self, action, self._wrap_action(self.query_api.actions, action))
+        for action in LoadApiActions.actions:
+            setattr(self, action, self._wrap_action(self.load_api.actions, action))
+
+        setattr(self, 'all_actions', self.query_api.actions.actions)
+        setattr(self, 'all_load_actions', self.load_api.actions.actions)
+
+    def _wrap_action(self, api_obj, action_name):
+        action = getattr(api_obj, action_name)
+
+        def wrapper(*args, **kwargs):
+            response = action(*args, **kwargs)
+            return ResponseContainer(response)
+
+        return wrapper
+
+
+class ResponseContainer(object):
+    def __init__(self, response):
+        self.raw = response
+        self._resources_dict = {}
+        self._resources_list = []
+        self.load()
+
+    def load(self):
+        body = self.raw.body
+        if not body:
+            return self
+
+        self._resources_dict = {}
+        self._resources_list = []
+
+        data_dict = {}
+        if 'update_list' in body:
+            data_dict = body['update_list']
+        elif 'errata_list' in body:
+            data_dict = body['errata_list']
+        elif 'CVE-' in next(iter(body)):
+            data_dict = body
+        else:
+            data_dict = {'Bare': body}
+
+        for item in data_dict:
+            res = Resource(item, body=data_dict[item])
+            self._add_resource(item, res)
+
+        return self
+
+    def _add_resource(self, name, val):
+        self._resources_list.append(val)
+        self._resources_dict[name] = val
+
+    def response_check(self, status_code=None):
+        if status_code:
+            assert self.raw.status_code == status_code
+        else:
+            assert self.raw.client_response
+
+        assert isinstance(
+            self.raw.body, dict), 'Response is not JSON:\n'r'{}'.format(self.raw.body)
+
+        if 'success' in self.raw.body:
+            assert self.raw.body['success']
+
+        return self
+
+    def get(self, key, default_value=None):
+        return self._resources_dict.get(key, default_value)
+
+    def __iter__(self):
+        return iter(self._resources_list)
+
+    def __getitem__(self, item):
+        if isinstance(item, str):
+            return self._resources_dict[item]
+        return self._resources_list[item]
+
+    def __len__(self):
+        return len(self._resources_list)
+
+    def __contains__(self, item):
+        return item in self._resources_dict
+
+    def __repr__(self):
+        return repr(self._resources_list)
+
+
+class Resource(object):
+    TIME_FIELDS = {
+        'public_date', 'modified_date', 'updated', 'issued'
+    }
+
+    def __init__(self, name, body=None):
+        self.name = name
+        self.raw = body
+        # set the same with underscores to make sure
+        # it's not overriden by ``self.load()``
+        self._name = name
+        self._body = body
+        self.load()
+
+    def load(self):
+        if not isinstance(self._body, dict):
+            return self
+
+        for key, value in self._body.items():
+            self._set_key(key, value)
+
+        return self
+
+    def _set_key(self, key, value):
+        if value is not None and key in self.TIME_FIELDS:
+            value = iso8601.parse_date(value)
+        setattr(self, key, value)
+
+    def __iter__(self):
+        return iter(self._body)
+
+    def __getitem__(self, item):
+        # use data processed by ``_set_key()``
+        if isinstance(item, str):
+            return self.__dict__[item]
+        return self._body[item]
+
+    def __len__(self):
+        return len(self._body)
+
+    def __contains__(self, item):
+        return item in self._body
+
+    def __repr__(self):
+        return '<Resource {}>'.format(self._name)
