@@ -14,6 +14,10 @@ def errata_body(errata):
     return dict(errata_list=errata)
 
 
+def repos_body(repos):
+    return dict(repository_list=repos)
+
+
 def updates_body(packages, repositories=None, modified_since=None):
     body = dict(package_list=packages)
     if repositories:
