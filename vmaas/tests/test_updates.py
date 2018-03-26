@@ -19,8 +19,8 @@ PACKAGES_W_REPOS = [
 ]
 
 REPOS = [
-    'rhel-7-workstation-rpms__7_DOT_4__x86_64',
-    'rhel-7-server-rpms__7_DOT_4__x86_64',
+    'rhel-6-workstation-rpms',
+    'rhel-7-server-rpms',
 ]
 
 
@@ -32,8 +32,6 @@ EXPECTED_KEYS = [
 
 
 def check_keys(package_records):
-    # skipping this check until GH#168 is fixed
-    return
     for record in package_records:
         for key in EXPECTED_KEYS:
             assert record[key] is not None, 'Expected key `{}` has no value'.format(key)
@@ -44,6 +42,7 @@ class TestUpdatesAll(object):
         """Tests updates using POST with multiple packages."""
         request_body = tools.updates_body([p[0] for p in PACKAGES])
         updates = rest_api.get_updates(body=request_body).response_check()
+        assert len(updates) == len(PACKAGES)
         for package, min_expected in PACKAGES:
             assert len(updates[package]) >= min_expected
             check_keys(updates[package])
@@ -54,24 +53,28 @@ class TestUpdatesAll(object):
         name, min_expected = package
         request_body = tools.updates_body([name])
         updates = rest_api.get_updates(body=request_body).response_check()
-        assert len(updates[name]) >= min_expected
-        check_keys(updates[name])
+        assert len(updates) == 1
+        update, = updates
+        assert len(update) >= min_expected
+        check_keys(update)
 
     @pytest.mark.parametrize('package', PACKAGES, ids=[p[0] for p in PACKAGES])
     def test_get(self, rest_api, package):
         """Tests updates using GET with single package."""
         name, min_expected = package
         updates = rest_api.get_update(name).response_check()
-        assert len(updates[name]) >= min_expected
-        check_keys(updates[name])
+        assert len(updates) == 1
+        update, = updates
+        assert len(update) >= min_expected
+        check_keys(update)
 
 
-@pytest.mark.skip(reason='GH#168')
 class TestUpdatesInRepos(object):
     def test_post_multi(self, rest_api):
         """Tests updates in repos using POST with multiple packages."""
         request_body = tools.updates_body([p[0] for p in PACKAGES_W_REPOS], repositories=REPOS)
         updates = rest_api.get_updates(body=request_body).response_check()
+        assert len(updates) == len(PACKAGES_W_REPOS)
         for package, min_expected in PACKAGES_W_REPOS:
             assert len(updates[package]) >= min_expected
             check_keys(updates[package])
@@ -82,5 +85,7 @@ class TestUpdatesInRepos(object):
         name, min_expected = package
         request_body = tools.updates_body([name], repositories=REPOS)
         updates = rest_api.get_updates(body=request_body).response_check()
-        assert len(updates[name]) >= min_expected
-        check_keys(updates[name])
+        assert len(updates) == 1
+        update, = updates
+        assert len(update) >= min_expected
+        check_keys(update)
