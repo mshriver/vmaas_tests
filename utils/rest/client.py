@@ -16,8 +16,8 @@ class QueryApiActions(SimpleResource):
     actions = {
         'get_cve': {'method': 'GET', 'url': 'cves/{}'},
         'get_cves': {'method': 'POST', 'url': 'cves'},
-        'get_errata': {'method': 'GET', 'url': 'errata/{}'},
-        'get_erratas': {'method': 'POST', 'url': 'errata'},
+        'get_erratum': {'method': 'GET', 'url': 'errata/{}'},
+        'get_errata': {'method': 'POST', 'url': 'errata'},
         'get_repo': {'method': 'GET', 'url': 'repos/{}'},
         'get_repos': {'method': 'POST', 'url': 'repos'},
         'get_update': {'method': 'GET', 'url': 'updates/{}'},

@@ -10,8 +10,8 @@ def cves_body(cves):
     return dict(cve_list=cves)
 
 
-def erratas_body(erratas):
-    return dict(errata_list=erratas)
+def errata_body(errata):
+    return dict(errata_list=errata)
 
 
 def updates_body(packages, repositories=None, modified_since=None):

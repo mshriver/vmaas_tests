@@ -5,14 +5,14 @@ import pytest
 from utils.rest import tools
 
 PACKAGES = [
-    # package, minimal number of expected erratas
+    # package, minimal number of expected errata
     ('bash-0:4.2.46-20.el7_2.x86_64', 4),
     ('postgresql-0:9.2.18-1.el7.x86_64', 12),
     ('postgresql-devel-9.2.18-1.el7.x86_64', 12),
 ]
 
 PACKAGES_W_REPOS = [
-    # package, minimal number of expected erratas
+    # package, minimal number of expected errata
     ('bash-0:4.2.46-20.el7_2.x86_64', 2),
     ('postgresql-0:9.2.18-1.el7.x86_64', 6),
     ('postgresql-devel-9.2.18-1.el7.x86_64', 6),
