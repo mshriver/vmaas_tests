@@ -5,8 +5,8 @@ import pytest
 from utils.rest import tools
 
 REPOS = [
-    ('rhel-7-server-rpms', 2),
-    ('rhel-6-workstation-rpms', 2),
+    ('rhel-7-server-rpms', 1),
+    ('rhel-6-workstation-rpms', 1),
 ]
 
 EXPECTED_KEYS = [
