@@ -59,14 +59,17 @@ def check_updates_uniq(updates):
 def _compare_updates(expected_update, available_update):
     for key, value in expected_update.items():
         if key not in available_update:
-            break
+            return False
+        # partial match for package name
         if key == 'package' and value in available_update[key]:
             continue
+        # exact match for the rest of the values
         if value == available_update[key]:
             continue
-    else:
-        return True
-    return False
+        # if we are here, values doesn't match
+        return False
+
+    return True
 
 
 def check_expected_updates(expected_updates, available_updates):
