@@ -97,8 +97,8 @@ class ResponseContainer(object):
             data_dict = body['errata_list']
         elif 'repository_list' in body:
             data_dict = body['repository_list']
-        elif 'CVE-' in next(iter(body)):
-            data_dict = body
+        elif 'cve_list' in body:
+            data_dict = body['cve_list']
         else:
             data_dict = {'Bare': body}
 
