@@ -56,7 +56,7 @@ def check_updates_uniq(updates):
     assert not not_unique, 'Duplicates found: {!r}'.format(not_unique)
 
 
-def _compare_updates(expected_update, available_update):
+def _updates_match(expected_update, available_update):
     for key, value in expected_update.items():
         if key not in available_update:
             return False
@@ -76,7 +76,7 @@ def check_expected_updates(expected_updates, available_updates):
     not_found = []
     for expected_update in expected_updates:
         for available_update in available_updates:
-            if _compare_updates(expected_update, available_update):
+            if _updates_match(expected_update, available_update):
                 break
         else:
             not_found.append(expected_update)
