@@ -7,18 +7,22 @@ import datetime
 
 
 def cves_body(cves):
+    """Generates request body for CVEs query out of list of CVEs."""
     return dict(cve_list=cves)
 
 
 def errata_body(errata):
+    """Generates request body for errata query out of list of errata."""
     return dict(errata_list=errata)
 
 
 def repos_body(repos):
+    """Generates request body for repos query out of list of repos."""
     return dict(repository_list=repos)
 
 
 def updates_body(packages, repositories=None, modified_since=None):
+    """Generates request body for package updates query out of list of packages."""
     body = dict(package_list=packages)
     if repositories:
         body['repository_list'] = repositories
@@ -30,14 +34,15 @@ def updates_body(packages, repositories=None, modified_since=None):
 
 
 def check_updates_uniq(updates):
+    """Checks that returned update records are unique."""
     known_records = []
     not_unique = []
     for update in updates:
         for record in known_records:
             if record != update:
                 continue
-            # If are here, the record is already known.
-            # Making sure the record is added to `not_unique` list just once.
+            # If we are here, the record is already known.
+            # Making sure the record is added to `not_unique` list only once.
             for seen in not_unique:
                 if seen == update:
                     break
@@ -51,6 +56,7 @@ def check_updates_uniq(updates):
 
 
 def _updates_match(expected_update, available_update):
+    """Checks if expected update record matches available update record."""
     for key, value in expected_update.items():
         if key not in available_update:
             return False
@@ -60,13 +66,14 @@ def _updates_match(expected_update, available_update):
         # exact match for the rest of the values
         if value == available_update[key]:
             continue
-        # if we are here, values doesn't match
+        # if we are here, values don't match
         return False
 
     return True
 
 
 def check_expected_updates(expected_updates, available_updates):
+    """Checks if all expected update records are present in available updates."""
     not_found = []
     for expected_update in expected_updates:
         for available_update in available_updates:
@@ -78,6 +85,7 @@ def check_expected_updates(expected_updates, available_updates):
 
 
 def validate_package_updates(package, expected_updates):
+    """Runs checks on response body of 'updates' query."""
     assert package.description
     assert package.summary
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # pylint: disable=no-member
 """
-VMaaS REST API client
+VMaaS REST API client for tests development.
 """
 
 import logging
@@ -13,6 +13,7 @@ import iso8601
 
 
 class QueryApiActions(SimpleResource):
+    """Actions available on query API."""
     actions = {
         'get_cve': {'method': 'GET', 'url': 'cves/{}'},
         'get_cves': {'method': 'POST', 'url': 'cves'},
@@ -25,7 +26,8 @@ class QueryApiActions(SimpleResource):
     }
 
 
-class LoadApiActions(SimpleResource):
+class SyncApiActions(SimpleResource):
+    """Actions available on sync API."""
     actions = {
         'cvescan': {'method': 'GET', 'url': 'sync/cve'},
         'reposcan': {'method': 'POST', 'url': 'sync/repo'},
@@ -34,6 +36,15 @@ class LoadApiActions(SimpleResource):
 
 
 class VMaaSClient(object):
+    """VMaaS REST API client.
+
+    Args:
+        address: IP address or hostname of query service
+        port: Port of query service
+        address2: IP address or hostname of sync service
+        port2: Port of sync service
+        logger: Instance of logger
+    """
     # pylint: disable=too-many-arguments
     def __init__(self, address, port=8080, address2=None, port2=8081, logger=None):
         self.logger = logger or logging.getLogger(__name__)
@@ -45,7 +56,7 @@ class VMaaSClient(object):
             append_slash=False,  # append slash to final url
             json_encode_body=True,  # encode body as json
         )
-        self.load_api = SimpleAPI(
+        self.sync_api = SimpleAPI(
             api_root_url='http://{}:{}/api/v1/'.format(address2 or address, port2),
             params={},
             headers={},
@@ -55,15 +66,15 @@ class VMaaSClient(object):
         )
 
         self.query_api.add_resource(resource_name='actions', resource_class=QueryApiActions)
-        self.load_api.add_resource(resource_name='actions', resource_class=LoadApiActions)
+        self.sync_api.add_resource(resource_name='actions', resource_class=SyncApiActions)
 
         for action in QueryApiActions.actions:
             setattr(self, action, self._wrap_action(self.query_api.actions, action))
-        for action in LoadApiActions.actions:
-            setattr(self, action, self._wrap_action(self.load_api.actions, action))
+        for action in SyncApiActions.actions:
+            setattr(self, action, self._wrap_action(self.sync_api.actions, action))
 
         setattr(self, 'all_actions', self.query_api.actions.actions)
-        setattr(self, 'all_load_actions', self.load_api.actions.actions)
+        setattr(self, 'all_sync_actions', self.sync_api.actions.actions)
 
     def _wrap_action(self, api_obj, action_name):
         action = getattr(api_obj, action_name)
@@ -76,6 +87,11 @@ class VMaaSClient(object):
 
 
 class ResponseContainer(object):
+    """Holds response data and Resources created out of response data.
+
+    Args:
+        response: Complete response as returned by simple_rest_client
+    """
     def __init__(self, response):
         self.raw = response
         self._resources_dict = {}
@@ -148,6 +164,12 @@ class ResponseContainer(object):
 
 
 class Resource(object):
+    """Holds processed part of response data.
+
+    Args:
+        name: Name of the resource (e.g. bash-0:4.2.46-20.el7_2.x86_64)
+        body: Resource data
+    """
     TIME_FIELDS = {
         'public_date', 'modified_date', 'updated', 'issued'
     }
