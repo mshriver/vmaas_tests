@@ -6,22 +6,22 @@ REST API helper functions
 import datetime
 
 
-def cves_body(cves):
+def gen_cves_body(cves):
     """Generates request body for CVEs query out of list of CVEs."""
     return dict(cve_list=cves)
 
 
-def errata_body(errata):
+def gen_errata_body(errata):
     """Generates request body for errata query out of list of errata."""
     return dict(errata_list=errata)
 
 
-def repos_body(repos):
+def gen_repos_body(repos):
     """Generates request body for repos query out of list of repos."""
     return dict(repository_list=repos)
 
 
-def updates_body(packages, repositories=None, modified_since=None):
+def gen_updates_body(packages, repositories=None, modified_since=None):
     """Generates request body for package updates query out of list of packages."""
     body = dict(package_list=packages)
     if repositories:

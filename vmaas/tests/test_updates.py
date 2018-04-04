@@ -151,7 +151,7 @@ REPOS = [
 class TestUpdatesAll(object):
     def test_post_multi(self, rest_api):
         """Tests updates using POST with multiple packages."""
-        request_body = tools.updates_body([p[0] for p in PACKAGES])
+        request_body = tools.gen_updates_body([p[0] for p in PACKAGES])
         updates = rest_api.get_updates(body=request_body).response_check()
         assert len(updates) == len(PACKAGES)
         for package_name, expected_updates in PACKAGES:
@@ -162,7 +162,7 @@ class TestUpdatesAll(object):
     def test_post_single(self, rest_api, package_record):
         """Tests updates using POST with single package."""
         name, expected_updates = package_record
-        request_body = tools.updates_body([name])
+        request_body = tools.gen_updates_body([name])
         updates = rest_api.get_updates(body=request_body).response_check()
         assert len(updates) == 1
         package, = updates
@@ -181,7 +181,7 @@ class TestUpdatesAll(object):
 class TestUpdatesInRepos(object):
     def test_post_multi(self, rest_api):
         """Tests updates in repos using POST with multiple packages."""
-        request_body = tools.updates_body([p[0] for p in PACKAGES_W_REPOS], repositories=REPOS)
+        request_body = tools.gen_updates_body([p[0] for p in PACKAGES_W_REPOS], repositories=REPOS)
         updates = rest_api.get_updates(body=request_body).response_check()
         assert len(updates) == len(PACKAGES_W_REPOS)
         for package_name, expected_updates in PACKAGES_W_REPOS:
@@ -193,7 +193,7 @@ class TestUpdatesInRepos(object):
     def test_post_single(self, rest_api, package_record):
         """Tests updates in repos using POST with single package."""
         name, expected_updates = package_record
-        request_body = tools.updates_body([name], repositories=REPOS)
+        request_body = tools.gen_updates_body([name], repositories=REPOS)
         updates = rest_api.get_updates(body=request_body).response_check()
         assert len(updates) == 1
         package, = updates

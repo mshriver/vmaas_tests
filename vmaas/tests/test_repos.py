@@ -28,7 +28,7 @@ def check_keys(repo_records):
 class TestReposQuery(object):
     def test_post_multi(self, rest_api):
         """Tests multiple repos using POST."""
-        request_body = tools.repos_body([p[0] for p in REPOS])
+        request_body = tools.gen_repos_body([p[0] for p in REPOS])
         repos = rest_api.get_repos(body=request_body).response_check()
         assert len(repos) == len(REPOS)
         for repo_name, min_expected in REPOS:
@@ -39,7 +39,7 @@ class TestReposQuery(object):
     def test_post_single(self, rest_api, repo):
         """Tests single repo using POST."""
         repo_name, min_expected = repo
-        request_body = tools.repos_body([repo_name])
+        request_body = tools.gen_repos_body([repo_name])
         repos = rest_api.get_repos(body=request_body).response_check()
         assert len(repos) == 1
         repo, = repos

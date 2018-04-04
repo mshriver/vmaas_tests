@@ -29,7 +29,7 @@ def check_keys(erratum):
 class TestErrataQuery(object):
     def test_post_multi(self, rest_api):
         """Tests multiple errata using POST."""
-        request_body = tools.errata_body(ERRATA)
+        request_body = tools.gen_errata_body(ERRATA)
         errata = rest_api.get_errata(body=request_body).response_check()
         assert len(errata) == len(ERRATA)
         for erratum_name in ERRATA:
@@ -39,7 +39,7 @@ class TestErrataQuery(object):
     @pytest.mark.parametrize('erratum_name', ERRATA)
     def test_post_single(self, rest_api, erratum_name):
         """Tests single erratum using POST."""
-        request_body = tools.errata_body([erratum_name])
+        request_body = tools.gen_errata_body([erratum_name])
         errata = rest_api.get_errata(body=request_body).response_check()
         assert len(errata) == 1
         erratum, = errata

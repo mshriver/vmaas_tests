@@ -25,7 +25,7 @@ def check_keys(cve):
 class TestCVEsQuery(object):
     def test_post_multi(self, rest_api):
         """Tests multiple CVEs using POST."""
-        request_body = tools.cves_body(CVES)
+        request_body = tools.gen_cves_body(CVES)
         cves = rest_api.get_cves(body=request_body).response_check()
         assert len(cves) == len(CVES)
         for cve_name in CVES:
@@ -35,7 +35,7 @@ class TestCVEsQuery(object):
     @pytest.mark.parametrize('cve_name', CVES)
     def test_post_single(self, rest_api, cve_name):
         """Tests single CVE using POST."""
-        request_body = tools.cves_body([cve_name])
+        request_body = tools.gen_cves_body([cve_name])
         cves = rest_api.get_cves(body=request_body).response_check()
         assert len(cves) == 1
         cve, = cves
