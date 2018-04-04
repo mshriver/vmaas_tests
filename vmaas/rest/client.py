@@ -176,18 +176,20 @@ class Resource(object):
 
     def __init__(self, name, body=None):
         self.name = name
-        self.raw = body
-        # set the same with underscores to make sure
+        # set the same with underscore to make sure
         # it's not overriden by ``self.load()``
         self._name = name
+        self.raw = body
         self._body = body
         self.load()
 
     def load(self):
-        if not isinstance(self._body, dict):
+        if not isinstance(self.raw, dict):
             return self
 
-        for key, value in self._body.items():
+        self._body = self.raw.copy()
+
+        for key, value in self.raw.items():
             self._set_key(key, value)
 
         return self
@@ -195,15 +197,16 @@ class Resource(object):
     def _set_key(self, key, value):
         if value is not None and key in self.TIME_FIELDS:
             value = iso8601.parse_date(value)
+            self._body[key] = value
         setattr(self, key, value)
 
     def __iter__(self):
         return iter(self._body)
 
+    def __getattr__(self, attr):
+        return getattr(self._body, attr)
+
     def __getitem__(self, item):
-        # use data processed by ``_set_key()``
-        if isinstance(item, str):
-            return self.__dict__[item]
         return self._body[item]
 
     def __len__(self):
