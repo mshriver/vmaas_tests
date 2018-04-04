@@ -2,7 +2,7 @@
 
 import pytest
 
-from utils.rest import tools
+from vmaas.rest import tools
 
 REPOS = [
     ('rhel-7-server-rpms', 1),

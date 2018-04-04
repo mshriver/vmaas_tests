@@ -2,7 +2,7 @@
 
 from wait_for import wait_for
 
-from utils.rest import exceptions
+from vmaas.rest import exceptions
 
 
 def test_repo_refresh(rest_api):

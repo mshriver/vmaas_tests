@@ -6,7 +6,7 @@ import logging
 import pytest
 import yaml
 
-from utils.rest.client import VMaaSClient
+from vmaas.rest.client import VMaaSClient
 
 CONF_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', '..', 'conf')
 

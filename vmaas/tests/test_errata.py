@@ -2,7 +2,7 @@
 
 import pytest
 
-from utils.rest import tools
+from vmaas.rest import tools
 
 ERRATA = [
     'RHBA-2016:2858',

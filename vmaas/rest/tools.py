@@ -5,12 +5,6 @@ REST API helper functions
 
 import datetime
 
-EXPECTED_UPDATE_KEYS = [
-    'erratum',
-    'repository',
-    'package',
-]
-
 
 def cves_body(cves):
     return dict(cve_list=cves)
@@ -89,7 +83,7 @@ def validate_package_updates(package, expected_updates):
 
     # check that expected keys are available in each record
     for record in package.available_updates:
-        for key in EXPECTED_UPDATE_KEYS:
+        for key in expected_updates[0]:
             assert record[key] is not None, 'Expected key `{}` has no value'.format(key)
 
     # check that expected updates are present in the response

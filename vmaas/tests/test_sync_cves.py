@@ -2,7 +2,7 @@
 
 from wait_for import wait_for
 
-from utils.rest import exceptions
+from vmaas.rest import exceptions
 
 
 def test_sync_cves(rest_api):

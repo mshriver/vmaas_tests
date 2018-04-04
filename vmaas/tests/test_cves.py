@@ -2,7 +2,7 @@
 
 import pytest
 
-from utils.rest import tools
+from vmaas.rest import tools
 
 CVES = [
     'CVE-2016-0634',
