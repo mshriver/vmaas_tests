@@ -128,11 +128,13 @@ EXPECTED_POSTGRES_DEVEL_W_REPO = [
     },
 ]
 
+
 PACKAGES = [
     # package, expected updates
     ('bash-0:4.2.46-20.el7_2.x86_64', EXPECTED_BASH),
     ('postgresql-0:9.2.18-1.el7.x86_64', EXPECTED_POSTGRES),
     ('postgresql-devel-9.2.18-1.el7.x86_64', EXPECTED_POSTGRES_DEVEL),
+    ('telepathy-logger-0.8.0-5.el7.x86_64', None),
 ]
 
 PACKAGES_W_REPOS = [

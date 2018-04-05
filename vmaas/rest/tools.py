@@ -5,6 +5,8 @@ REST API helper functions
 
 import datetime
 
+from vmaas.utils.blockers import GH
+
 
 def gen_cves_body(cves):
     """Generates request body for CVEs query out of list of CVEs."""
@@ -86,8 +88,21 @@ def check_expected_updates(expected_updates, available_updates):
 
 def validate_package_updates(package, expected_updates):
     """Runs checks on response body of 'updates' query."""
+    if not package:
+        return
+    if not (package.available_updates or GH(197).blocks):
+        assert not package.get('description')
+        assert not package.get('summary')
+        return
+
     assert package.description
     assert package.summary
+
+    # check that available updates records are unique
+    check_updates_uniq(package.available_updates)
+
+    if not expected_updates:
+        return
 
     # check that expected keys are available in each record
     for record in package.available_updates:
@@ -97,7 +112,3 @@ def validate_package_updates(package, expected_updates):
     # check that expected updates are present in the response
     assert len(package.available_updates) >= len(expected_updates)
     check_expected_updates(expected_updates, package.available_updates)
-
-    # check that available updates records are unique
-    # disabled until GH#176 is fixed
-    # check_updates_uniq(package.available_updates)
