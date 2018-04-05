@@ -5,14 +5,11 @@ Blockers using GitHub issues.
 
 # Implementation copied from ManageIQ/integration_tests
 
-import logging
 import re
 
 from github import Github
 
 from vmaas.utils.conf import conf
-
-logger = logging.getLogger(__name__)
 
 
 class _classproperty(property):

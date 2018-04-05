@@ -1,23 +1,17 @@
 # -*- coding: utf-8 -*-
 
-import os
+import logging
 
 import pytest
 
 from vmaas.rest.client import VMaaSClient
-from vmaas.utils.conf import conf as _conf
-
-CONF_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', '..', 'conf')
-
-# TODO: initialize logging
+from vmaas.utils.conf import conf
 
 
-@pytest.fixture()
-def conf():
-    return _conf
+logging.basicConfig()
 
 
 @pytest.fixture()
-def rest_api(conf):
+def rest_api():
     hostname = conf.get('hostname', 'localhost')
     return VMaaSClient(hostname)

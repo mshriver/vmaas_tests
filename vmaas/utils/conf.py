@@ -4,7 +4,6 @@ Configuration loading.
 """
 
 import os
-import logging
 
 import yaml
 
@@ -24,12 +23,10 @@ def get_conf():
 
     with open(default_conf, encoding='utf-8') as input_file:
         config_settings = yaml.load(input_file)
-    logging.debug('Default config loaded from `{}`'.format(default_conf))
 
     if local_conf:
         with open(local_conf, encoding='utf-8') as input_file:
             config_settings_user = yaml.load(input_file)
-        logging.info('Config loaded from `{}`'.format(local_conf))
 
         # merge default and user configuration
         config_settings.update(config_settings_user)
