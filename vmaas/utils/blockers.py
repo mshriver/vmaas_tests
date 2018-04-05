@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Blockers using GitHub issues
+Blockers using GitHub issues.
 """
 
 # Implementation copied from ManageIQ/integration_tests
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class _classproperty(property):
-    """Subclass property to make classmethod properties possible"""
+    """Subclass property to make classmethod properties possible."""
     def __get__(self, cls, owner):
         # pylint: disable=no-member
         return self.fget.__get__(None, owner)()
@@ -39,11 +39,11 @@ def classproperty(func):
 
 
 class Blocker(object):
-    """Base class for all blockers
+    """Base class for all blockers.
 
     REQUIRED THING! Any subclass' constructors must accept kwargs and after POPping the values
     required for the blocker's operation, `call to ``super`` with ``**kwargs`` must be done!
-    Failing to do this will render some of the functionality disabled ;).
+    Failing to do this will render some of the functionality disabled ;)
     """
     blocks = False
     kwargs = {}
@@ -69,7 +69,7 @@ class Blocker(object):
 
     @classmethod
     def parse(cls, blocker, **kwargs):
-        """Create a blocker object from some representation"""
+        """Create a blocker object from some representation."""
         if isinstance(blocker, cls):
             return blocker
         elif isinstance(blocker, str):
@@ -89,6 +89,7 @@ class Blocker(object):
 
 
 class GH(Blocker):
+    """GitHub issues blocker."""
     DEFAULT_REPOSITORY = conf.get('github', {}).get('upstream_repo')
     _issue_cache = {}
 
@@ -124,7 +125,7 @@ class GH(Blocker):
                                                   str(description).strip()).groups()
             except AttributeError:
                 raise ValueError(
-                    "Could not parse '{}' as a proper GH issue anchor!".format(str(description)))
+                    'Could not parse `{!s}` as a proper GH issue anchor!'.format(description))
             else:
                 self._repo = '{}/{}'.format(owner, repo)
                 self.issue = int(issue_num)
