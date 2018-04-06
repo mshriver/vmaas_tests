@@ -2,7 +2,7 @@
 
 import pytest
 
-from vmaas.rest import tools
+from vmaas.rest import schemas, tools
 
 
 EXPECTED_BASH = [
@@ -155,6 +155,7 @@ class TestUpdatesAll(object):
         """Tests updates using POST with multiple packages."""
         request_body = tools.gen_updates_body([p[0] for p in PACKAGES])
         updates = rest_api.get_updates(body=request_body).response_check()
+        schemas.updates_top_schema.validate(updates.raw.body)
         assert len(updates) == len(PACKAGES)
         for package_name, expected_updates in PACKAGES:
             package = updates[package_name]
@@ -166,6 +167,7 @@ class TestUpdatesAll(object):
         name, expected_updates = package_record
         request_body = tools.gen_updates_body([name])
         updates = rest_api.get_updates(body=request_body).response_check()
+        schemas.updates_top_schema.validate(updates.raw.body)
         assert len(updates) == 1
         package, = updates
         tools.validate_package_updates(package, expected_updates)
@@ -175,6 +177,7 @@ class TestUpdatesAll(object):
         """Tests updates using GET with single package."""
         name, expected_updates = package_record
         updates = rest_api.get_update(name).response_check()
+        schemas.updates_top_schema.validate(updates.raw.body)
         assert len(updates) == 1
         package, = updates
         tools.validate_package_updates(package, expected_updates)
@@ -185,6 +188,7 @@ class TestUpdatesInRepos(object):
         """Tests updates in repos using POST with multiple packages."""
         request_body = tools.gen_updates_body([p[0] for p in PACKAGES_W_REPOS], repositories=REPOS)
         updates = rest_api.get_updates(body=request_body).response_check()
+        schemas.updates_top_repolist_schema.validate(updates.raw.body)
         assert len(updates) == len(PACKAGES_W_REPOS)
         for package_name, expected_updates in PACKAGES_W_REPOS:
             package = updates[package_name]
@@ -197,6 +201,7 @@ class TestUpdatesInRepos(object):
         name, expected_updates = package_record
         request_body = tools.gen_updates_body([name], repositories=REPOS)
         updates = rest_api.get_updates(body=request_body).response_check()
+        schemas.updates_top_repolist_schema.validate(updates.raw.body)
         assert len(updates) == 1
         package, = updates
         tools.validate_package_updates(package, expected_updates)

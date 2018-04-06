@@ -5,6 +5,7 @@ REST API helper functions
 
 import datetime
 
+from vmaas.rest import schemas
 from vmaas.utils.blockers import GH
 
 
@@ -95,19 +96,14 @@ def validate_package_updates(package, expected_updates):
         assert not package.get('summary')
         return
 
-    assert package.description
-    assert package.summary
+    # check package data using schema
+    schemas.updates_package_schema.validate(package.raw)
 
     # check that available updates records are unique
     check_updates_uniq(package.available_updates)
 
     if not expected_updates:
         return
-
-    # check that expected keys are available in each record
-    for record in package.available_updates:
-        for key in expected_updates[0]:
-            assert record[key] is not None, 'Expected key `{}` has no value'.format(key)
 
     # check that expected updates are present in the response
     assert len(package.available_updates) >= len(expected_updates)
