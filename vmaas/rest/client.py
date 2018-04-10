@@ -76,7 +76,8 @@ class VMaaSClient(object):
         setattr(self, 'all_actions', self.query_api.actions.actions)
         setattr(self, 'all_sync_actions', self.sync_api.actions.actions)
 
-    def _wrap_action(self, api_obj, action_name):
+    @staticmethod
+    def _wrap_action(api_obj, action_name):
         action = getattr(api_obj, action_name)
 
         def wrapper(*args, **kwargs):
@@ -99,6 +100,7 @@ class ResponseContainer(object):
         self.load()
 
     def load(self):
+        """Loads response body data."""
         body = self.raw.body
         if not body:
             return self
@@ -129,6 +131,7 @@ class ResponseContainer(object):
         self._resources_dict[name] = val
 
     def response_check(self, status_code=None):
+        """Asserts that the response HTTP status code and content is as expected."""
         if status_code:
             assert self.raw.status_code == status_code
         else:
@@ -184,6 +187,7 @@ class Resource(object):
         self.load()
 
     def load(self):
+        """Loads resource body data."""
         if not isinstance(self.raw, dict):
             return self
 
