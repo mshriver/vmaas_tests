@@ -92,10 +92,6 @@ def validate_package_updates(package, expected_updates, exact_match=False):
     """Runs checks on response body of 'updates' query."""
     if not package:
         return
-    if not (package.available_updates or GH(197).blocks):
-        assert not package.get('description')
-        assert not package.get('summary')
-        return
 
     # check package data using schema
     schemas.updates_package_schema.validate(package.raw)
