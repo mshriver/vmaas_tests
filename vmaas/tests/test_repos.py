@@ -6,7 +6,7 @@ from vmaas.rest import schemas, tools
 
 REPOS = [
     ('rhel-7-server-rpms', 1),
-    ('rhel-6-workstation-rpms', 1),
+    ('vmaas-test-1', 1),
 ]
 
 
