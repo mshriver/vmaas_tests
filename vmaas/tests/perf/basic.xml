@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE tsung SYSTEM "/usr/share/tsung/tsung-1.0.dtd" []>
+<tsung loglevel="warning">
+
+  <clients>
+    <client host="localhost" cpu="2" maxusers="30000000"/>
+  </clients>
+
+  <servers>
+    <server host="localhost" port="8080" type="tcp"/>
+  </servers>
+
+  <load duration="5" unit="minute">
+    <arrivalphase phase="1" duration="10" unit="minute">
+      <users maxnumber="100" arrivalrate="100" unit="second"/>
+    </arrivalphase>
+  </load>
+
+  <sessions>
+    <session type="ts_http" weight="1" name="updates">
+      <for from="1" to="2" var="i" incr="0">
+        <request>
+          <http url="/api/v1/updates/"
+              method="POST"
+              contents_from_file="updates.json" />
+        </request>
+      </for>
+    </session>
+    <session type="ts_http" weight="1" name="errata">
+      <for from="1" to="2" var="i" incr="0">
+        <request>
+          <http url="/api/v1/errata/"
+              method="POST"
+              contents_from_file="errata.json" />
+        </request>
+      </for>
+    </session>
+    <session type="ts_http" weight="1" name="cves">
+      <for from="1" to="2" var="i" incr="0">
+        <request>
+          <http url="/api/v1/cves/"
+              method="POST"
+              contents_from_file="cves.json" />
+        </request>
+      </for>
+    </session>
+    <session type="ts_http" weight="1" name="repos">
+      <for from="1" to="2" var="i" incr="0">
+        <request>
+          <http url="/api/v1/repos/"
+              method="POST"
+              contents_from_file="repos.json" />
+        </request>
+      </for>
+    </session>
+  </sessions>
+</tsung>
