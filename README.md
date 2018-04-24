@@ -10,6 +10,18 @@
 
 ## Running tests
 
+```bash
+pytest -v
 ```
-$ pytest -v
+
+## Perf tests
+
+Install [tsung](http://tsung.erlang-projects.org/) testing tool (``dnf install tsung`` on Fedora).
+
+Run tests using ``run_upload_perf_test.py`` script.
+
+This will run perf tests for 60 seconds with 50 concurrent users and with 300 packages per request randomly selected from packages list agains VMaaS server running on localhost port 8080:
+
+```bash
+vmaas/scripts/run_upload_perf_test.py -i rpm_list.txt -p 300 -s localhost:8080 -d 60 -u 50
 ```
