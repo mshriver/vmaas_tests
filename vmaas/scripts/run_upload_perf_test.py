@@ -149,30 +149,25 @@ def gen_tsung_xml(packages_file, counts_list, clients, servers, duration, users_
     write_tsung_xml(top_element)
 
 
-def get_servers(servers):
-    servers_t = []
-    if isinstance(servers, str):
-        servers = [servers]
-    for rec in servers:
+def _get_objs_list(klass, data):
+    objs_list = []
+    if isinstance(data, str):
+        data = [data]
+    for rec in data:
         if ':' in rec:
             args = rec.split(':')
-            servers_t.append(Server(*args))
+            objs_list.append(klass(*args))
         else:
-            servers_t.append(Server(rec))
-    return servers_t
+            objs_list.append(klass(rec))
+    return objs_list
+
+
+def get_servers(servers):
+    return _get_objs_list(Server, servers)
 
 
 def get_clients(clients):
-    clients_t = []
-    if isinstance(clients, str):
-        clients = [clients]
-    for rec in clients:
-        if ':' in rec:
-            args = rec.split(':')
-            clients_t.append(Client(*args))
-        else:
-            clients_t.append(Client(rec))
-    return clients_t
+    return _get_objs_list(Client, clients)
 
 
 def get_counts_list(packages_num, requests_num):
@@ -189,7 +184,7 @@ def _chdir(target_dir):
 
 def run_tsung():
     ret = subprocess.run(
-        ['tsung', '-f', TSUNG_XML, 'start'],
+        ['tsung', '-f', TSUNG_XML, '-l', './', 'start'],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         check=True
@@ -216,6 +211,11 @@ def get_args(args=None):
     parser = argparse.ArgumentParser(description='run_upload_test')
     parser.add_argument('-i', '--packages_file', required=True,
                         help='File with list of rpm files')
+    parser.add_argument('-s', '--server', required=True, action='append',
+                        help='Server hostname:port')
+    parser.add_argument('-c', '--client', default='localhost', action='append',
+                        help='Client host:cpus:maxusers'
+                             ' (default: %(default)s)')
     parser.add_argument('-d', '--duration', type=int, default=600, metavar='SEC',
                         help='Duration of test run (in seconds)'
                              ' (default: %(default)s)')
@@ -224,11 +224,6 @@ def get_args(args=None):
                              ' (default: %(default)s)')
     parser.add_argument('-p', '--packages_num', type=int, default=1000, metavar='PACKAGES',
                         help='How many packages per request'
-                             ' (default: %(default)s)')
-    parser.add_argument('-s', '--server', required=True, action='append',
-                        help='Server hostname:port')
-    parser.add_argument('-c', '--client', default='localhost', action='append',
-                        help='Client host:cpus:maxusers'
                              ' (default: %(default)s)')
     parser.add_argument('--requests_num', type=int, default=20, metavar='REQUESTS',
                         help='How many unique requests to generate'
