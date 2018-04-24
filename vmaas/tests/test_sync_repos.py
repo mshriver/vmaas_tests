@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import pytest
+
 from wait_for import wait_for
 
 from vmaas.rest import exceptions
 
 
+@pytest.mark.skip(reason='not testing sync')
 def test_repo_refresh(rest_api):
     def _refresh():
         try:
