@@ -1,8 +1,0 @@
-{
-    "package_list": [
-        "bash-0:4.2.46-20.el7_2.x86_64",
-        "postgresql-0:9.2.18-1.el7.x86_64",
-        "postgresql-devel-9.2.18-1.el7.x86_64",
-        "telepathy-logger-0.8.0-5.el7.x86_64"
-    ]
-}
