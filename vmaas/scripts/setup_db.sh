@@ -18,7 +18,7 @@ tse_before=$(date +%s)
 # wait_task <message_in_log> <timeout_in_sec> <project_path>
 wait_task() {
   cd "$3"
-  tmpl_last="docker-compose logs | grep \"<message>\" | tail -n 1 | egrep -o \"([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2})\"| xargs -0 date +%s -d"
+  tmpl_last="docker-compose logs | grep \"<message>\" | tail -n 1 | egrep -o \"([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2})\"| xargs --no-run-if-empty -0 date +%s -d"
   last=${tmpl_last//<message>/$1}
   while true; do
     if [ "$(eval $last)" -ge "$tse_before" ]; then
