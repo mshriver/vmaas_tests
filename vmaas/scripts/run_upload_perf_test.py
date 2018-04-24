@@ -175,8 +175,8 @@ def get_clients(clients):
     return clients_t
 
 
-def get_counts_list(packages_num):
-    return [packages_num for __ in range(20)]
+def get_counts_list(packages_num, requests_num):
+    return [packages_num for __ in range(requests_num)]
 
 
 @contextmanager
@@ -215,20 +215,23 @@ def get_args(args=None):
     """Get command line arguments."""
     parser = argparse.ArgumentParser(description='run_upload_test')
     parser.add_argument('-i', '--packages_file', required=True,
-                        help='Path to CSV or SQLite reports file or xunit XML file')
+                        help='File with list of rpm files')
     parser.add_argument('-d', '--duration', type=int, default=600, metavar='SEC',
-                        help='How long (in seconds) to send requests'
+                        help='Duration of test run (in seconds)'
                              ' (default: %(default)s)')
     parser.add_argument('-u', '--users_num', type=int, default=100, metavar='USERS',
                         help='How many concurrent users'
                              ' (default: %(default)s)')
     parser.add_argument('-p', '--packages_num', type=int, default=1000, metavar='PACKAGES',
-                        help='How many packages'
+                        help='How many packages per request'
                              ' (default: %(default)s)')
     parser.add_argument('-s', '--server', required=True, action='append',
                         help='Server hostname:port')
     parser.add_argument('-c', '--client', default='localhost', action='append',
                         help='Client host:cpus:maxusers'
+                             ' (default: %(default)s)')
+    parser.add_argument('--requests_num', type=int, default=20, metavar='REQUESTS',
+                        help='How many unique requests to generate'
                              ' (default: %(default)s)')
     return parser.parse_args(args)
 
@@ -238,7 +241,7 @@ def main(args=None):
     args = get_args(args)
     gen_tsung_xml(
         args.packages_file,
-        get_counts_list(args.packages_num),
+        get_counts_list(args.packages_num, args.requests_num),
         get_clients(args.client),
         get_servers(args.server),
         args.duration,
