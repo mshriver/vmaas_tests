@@ -58,14 +58,15 @@ def check_updates_uniq(updates):
     assert not not_unique, 'Duplicates found: {!r}'.format(not_unique)
 
 
-def _updates_match(expected_update, available_update):
+def _updates_match(expected_update, available_update, exact_match):
     """Checks if expected update record matches available update record."""
     for key, value in expected_update.items():
         if key not in available_update:
             return False
         # partial match for package name
-        if key == 'package' and value in available_update[key]:
-            continue
+        if not exact_match:
+            if key == 'package' and value in available_update[key]:
+                continue
         # exact match for the rest of the values
         if value == available_update[key]:
             continue
@@ -75,25 +76,21 @@ def _updates_match(expected_update, available_update):
     return True
 
 
-def check_expected_updates(expected_updates, available_updates):
+def check_expected_updates(expected_updates, available_updates, exact_match):
     """Checks if all expected update records are present in available updates."""
     not_found = []
     for expected_update in expected_updates:
         for available_update in available_updates:
-            if _updates_match(expected_update, available_update):
+            if _updates_match(expected_update, available_update, exact_match):
                 break
         else:
             not_found.append(expected_update)
     assert not not_found, 'Expected update not found: {!r}'.format(not_found)
 
 
-def validate_package_updates(package, expected_updates):
+def validate_package_updates(package, expected_updates, exact_match=False):
     """Runs checks on response body of 'updates' query."""
     if not package:
-        return
-    if not (package.available_updates or GH(197).blocks):
-        assert not package.get('description')
-        assert not package.get('summary')
         return
 
     # check package data using schema
@@ -103,8 +100,13 @@ def validate_package_updates(package, expected_updates):
     check_updates_uniq(package.available_updates)
 
     if not expected_updates:
+        if exact_match:
+            assert package.available_updates == []
         return
 
     # check that expected updates are present in the response
-    assert len(package.available_updates) >= len(expected_updates)
-    check_expected_updates(expected_updates, package.available_updates)
+    if exact_match:
+        assert len(package.available_updates) == len(expected_updates)
+    else:
+        assert len(package.available_updates) >= len(expected_updates)
+    check_expected_updates(expected_updates, package.available_updates, exact_match)

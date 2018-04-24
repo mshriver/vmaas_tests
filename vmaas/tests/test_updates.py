@@ -145,7 +145,7 @@ PACKAGES_W_REPOS = [
 ]
 
 REPOS = [
-    'rhel-6-workstation-rpms',
+    'vmaas-test-1',
     'rhel-7-server-rpms',
 ]
 
