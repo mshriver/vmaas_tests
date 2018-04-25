@@ -6,7 +6,6 @@ REST API helper functions
 import datetime
 
 from vmaas.rest import schemas
-from vmaas.utils.blockers import GH
 
 
 def gen_cves_body(cves):
@@ -24,7 +23,8 @@ def gen_repos_body(repos):
     return dict(repository_list=repos)
 
 
-def gen_updates_body(packages, repositories=None, modified_since=None, basearch=None, releasever=None):
+def gen_updates_body(
+        packages, repositories=None, modified_since=None, basearch=None, releasever=None):
     """Generates request body for package updates query out of list of packages."""
     body = dict(package_list=packages)
     if repositories:
@@ -99,7 +99,17 @@ def validate_package_updates(package, expected_updates, exact_match=False):
         assert not package.get('summary')
         return
 
-    if hasattr(package, 'available_updates') and not package.available_updates and not expected_updates:
+    if (hasattr(package, 'available_updates') and not
+            package.available_updates and not
+            expected_updates):
+        return
+
+    if not package and expected_updates:
+        assert False, 'Expected updates not present.\nPackage: {}\nExpected updates: {}'.format(
+            package.raw, expected_updates)
+
+    if not package.raw:
+        # no point in checking schema etc.
         return
 
     # check package data using schema
