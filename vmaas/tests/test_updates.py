@@ -2,8 +2,8 @@
 
 import pytest
 
-from vmaas.rest import schemas, tools
 from vmaas.misc import packages
+from vmaas.rest import schemas, tools
 
 
 class TestUpdatesAll(object):
@@ -17,7 +17,8 @@ class TestUpdatesAll(object):
             package = updates[package_name]
             tools.validate_package_updates(package, expected_updates)
 
-    @pytest.mark.parametrize('package_record', packages.PACKAGES, ids=[p[0] for p in packages.PACKAGES])
+    @pytest.mark.parametrize(
+        'package_record', packages.PACKAGES, ids=[p[0] for p in packages.PACKAGES])
     def test_post_single(self, rest_api, package_record):
         """Tests updates using POST with single package."""
         name, expected_updates = package_record
@@ -28,7 +29,8 @@ class TestUpdatesAll(object):
         package, = updates
         tools.validate_package_updates(package, expected_updates)
 
-    @pytest.mark.parametrize('package_record', packages.PACKAGES, ids=[p[0] for p in packages.PACKAGES])
+    @pytest.mark.parametrize(
+        'package_record', packages.PACKAGES, ids=[p[0] for p in packages.PACKAGES])
     def test_get(self, rest_api, package_record):
         """Tests updates using GET with single package."""
         name, expected_updates = package_record
@@ -42,7 +44,8 @@ class TestUpdatesAll(object):
 class TestUpdatesInRepos(object):
     def test_post_multi(self, rest_api):
         """Tests updates in repos using POST with multiple packages."""
-        request_body = tools.gen_updates_body([p[0] for p in packages.PACKAGES_W_REPOS], repositories=packages.REPOS)
+        request_body = tools.gen_updates_body(
+            [p[0] for p in packages.PACKAGES_W_REPOS], repositories=packages.REPOS)
         updates = rest_api.get_updates(body=request_body).response_check()
         schemas.updates_top_repolist_schema.validate(updates.raw.body)
         assert len(updates) == len(packages.PACKAGES_W_REPOS)
@@ -77,7 +80,10 @@ class TestUpdatesFilterRelease(object):
             tools.validate_package_updates(package, expected_updates)
 
     @pytest.mark.parametrize(
-        'package_record', packages.PACKAGES_RELEASE_FILTER, ids=[p[0] for p in packages.PACKAGES_RELEASE_FILTER])
+        'package_record',
+        packages.PACKAGES_RELEASE_FILTER,
+        ids=[p[0] for p in packages.PACKAGES_RELEASE_FILTER]
+    )
     def test_post_single(self, rest_api, package_record):
         """Tests updates with filtered release version using POST with single package."""
         name, expected_updates = package_record
@@ -103,7 +109,10 @@ class TestUpdatesFilterBasearch(object):
             tools.validate_package_updates(package, expected_updates)
 
     @pytest.mark.parametrize(
-        'package_record', packages.PACKAGES_BASEARCH_FILTER, ids=[p[0] for p in packages.PACKAGES_BASEARCH_FILTER])
+        'package_record',
+        packages.PACKAGES_BASEARCH_FILTER,
+        ids=[p[0] for p in packages.PACKAGES_BASEARCH_FILTER]
+    )
     def test_post_single(self, rest_api, package_record):
         """Tests updates with filtered basearch using POST with single package."""
         name, expected_updates = package_record

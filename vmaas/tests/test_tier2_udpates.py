@@ -2,8 +2,8 @@
 
 import pytest
 
-from vmaas.rest import schemas, tools
 from vmaas.misc import packages
+from vmaas.rest import schemas, tools
 
 
 class TestUpdatesBasic(object):
@@ -17,7 +17,8 @@ class TestUpdatesBasic(object):
             tools.validate_package_updates(
                 updates[name], expected, exact_match=True)
 
-    @pytest.mark.parametrize('package', packages.PACKAGES_BASIC, ids=[p[0] for p in packages.PACKAGES_BASIC])
+    @pytest.mark.parametrize(
+        'package', packages.PACKAGES_BASIC, ids=[p[0] for p in packages.PACKAGES_BASIC])
     def test_post_single(self, rest_api, package):
         """Tests correct updates using POST with single package."""
         name, expected = package
@@ -28,7 +29,8 @@ class TestUpdatesBasic(object):
         package, = updates
         tools.validate_package_updates(package, expected, exact_match=True)
 
-    @pytest.mark.parametrize('package', packages.PACKAGES_BASIC, ids=[p[0] for p in packages.PACKAGES_BASIC])
+    @pytest.mark.parametrize(
+        'package', packages.PACKAGES_BASIC, ids=[p[0] for p in packages.PACKAGES_BASIC])
     def test_get_single(self, rest_api, package):
         """Tests correct updates using GET with single package."""
         name, expected = package
@@ -51,7 +53,8 @@ class TestUpdateInOtherRepo(object):
             tools.validate_package_updates(
                 updates[name], expected, exact_match=True)
 
-    @pytest.mark.parametrize('package', packages.PACKAGES_OTHER_REPO, ids=[p[0] for p in packages.PACKAGES_OTHER_REPO])
+    @pytest.mark.parametrize(
+        'package', packages.PACKAGES_OTHER_REPO, ids=[p[0] for p in packages.PACKAGES_OTHER_REPO])
     def test_post_single(self, rest_api, package):
         """Tests correct updates in different repo using POST with single package."""
         name, expected = package
@@ -62,7 +65,8 @@ class TestUpdateInOtherRepo(object):
         package, = updates
         tools.validate_package_updates(package, expected, exact_match=True)
 
-    @pytest.mark.parametrize('package', packages.PACKAGES_OTHER_REPO, ids=[p[0] for p in packages.PACKAGES_OTHER_REPO])
+    @pytest.mark.parametrize(
+        'package', packages.PACKAGES_OTHER_REPO, ids=[p[0] for p in packages.PACKAGES_OTHER_REPO])
     def test_get_single(self, rest_api, package):
         """Tests correct updates in different repo using GET with single package."""
         name, expected = package
@@ -85,7 +89,8 @@ class TestUpdateToNoarch(object):
             tools.validate_package_updates(updates[name], expected,
                                            exact_match=True)
 
-    @pytest.mark.parametrize('package', packages.PACKAGES_TO_NOARCH, ids=[p[0] for p in packages.PACKAGES_TO_NOARCH])
+    @pytest.mark.parametrize(
+        'package', packages.PACKAGES_TO_NOARCH, ids=[p[0] for p in packages.PACKAGES_TO_NOARCH])
     def test_post_single(self, rest_api, package):
         """Tests correct updates to noarch package using POST with single package."""
         name, expected = package
@@ -96,7 +101,8 @@ class TestUpdateToNoarch(object):
         package, = updates
         tools.validate_package_updates(package, expected, exact_match=True)
 
-    @pytest.mark.parametrize('package', packages.PACKAGES_TO_NOARCH, ids=[p[0] for p in packages.PACKAGES_TO_NOARCH])
+    @pytest.mark.parametrize(
+        'package', packages.PACKAGES_TO_NOARCH, ids=[p[0] for p in packages.PACKAGES_TO_NOARCH])
     def test_get_single(self, rest_api, package):
         """Tests correct updates to noarch package using GET with single package."""
         name, expected = package
@@ -119,7 +125,8 @@ class TestUpdateFromNoarch(object):
             tools.validate_package_updates(
                 updates[name], expected, exact_match=True)
 
-    @pytest.mark.parametrize('package', packages.PACKAGES_FROM_NOARCH, ids=[p[0] for p in packages.PACKAGES_FROM_NOARCH])
+    @pytest.mark.parametrize(
+        'package', packages.PACKAGES_FROM_NOARCH, ids=[p[0] for p in packages.PACKAGES_FROM_NOARCH])
     def test_post_single(self, rest_api, package):
         """Tests correct updates from noarch using POST with single package."""
         name, expected = package
@@ -130,7 +137,8 @@ class TestUpdateFromNoarch(object):
         package, = updates
         tools.validate_package_updates(package, expected, exact_match=True)
 
-    @pytest.mark.parametrize('package', packages.PACKAGES_FROM_NOARCH, ids=[p[0] for p in packages.PACKAGES_FROM_NOARCH])
+    @pytest.mark.parametrize(
+        'package', packages.PACKAGES_FROM_NOARCH, ids=[p[0] for p in packages.PACKAGES_FROM_NOARCH])
     def test_get_single(self, rest_api, package):
         """Tests correct updates from noarch using GET with single package."""
         name, expected = package
@@ -156,7 +164,11 @@ class TestUpdateI386Filter(object):
             tools.validate_package_updates(
                 updates[name], expected, exact_match=True)
 
-    @pytest.mark.parametrize('package', packages.PACKAGES_I386_W_FILTER, ids=[p[0] for p in packages.PACKAGES_I386_W_FILTER])
+    @pytest.mark.parametrize(
+        'package',
+        packages.PACKAGES_I386_W_FILTER,
+        ids=[p[0] for p in packages.PACKAGES_I386_W_FILTER]
+    )
     def test_post_single(self, rest_api, package):
         """Tests correct updates from i386 package with basearch set to x86_64
         using POST with single package.
