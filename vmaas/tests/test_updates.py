@@ -3,165 +3,21 @@
 import pytest
 
 from vmaas.rest import schemas, tools
-
-
-EXPECTED_BASH = [
-    {
-        "erratum": "RHSA-2017:1931",
-        "repository": "rhel-7-server-rpms",
-        "package": "bash-"
-    },
-    {
-        "erratum": "RHSA-2017:1931",
-        "repository": "rhel-7-workstation-rpms",
-        "package": "bash-"
-    },
-]
-
-EXPECTED_BASH_W_REPO = [
-    {
-        "erratum": "RHSA-2017:1931",
-        "repository": "rhel-7-server-rpms",
-        "package": "bash-"
-    },
-]
-
-EXPECTED_POSTGRES = [
-    {
-        "erratum": "RHSA-2017:3402",
-        "repository": "rhel-7-server-rpms",
-        "package": "postgresql-"
-    },
-    {
-        "erratum": "RHSA-2017:3402",
-        "repository": "rhel-7-workstation-rpms",
-        "package": "postgresql-"
-    },
-    {
-        "erratum": "RHSA-2017:2728",
-        "repository": "rhel-7-server-rpms",
-        "package": "postgresql-"
-    },
-    {
-        "erratum": "RHSA-2017:2728",
-        "repository": "rhel-7-workstation-rpms",
-        "package": "postgresql-"
-    },
-    {
-        "erratum": "RHSA-2017:1983",
-        "repository": "rhel-7-server-rpms",
-        "package": "postgresql-"
-    },
-    {
-        "erratum": "RHSA-2017:1983",
-        "repository": "rhel-7-workstation-rpms",
-        "package": "postgresql-"
-    },
-]
-
-EXPECTED_POSTGRES_W_REPO = [
-    {
-        "erratum": "RHSA-2017:3402",
-        "repository": "rhel-7-server-rpms",
-        "package": "postgresql-"
-    },
-    {
-        "erratum": "RHSA-2017:2728",
-        "repository": "rhel-7-server-rpms",
-        "package": "postgresql-"
-    },
-    {
-        "erratum": "RHSA-2017:1983",
-        "repository": "rhel-7-server-rpms",
-        "package": "postgresql-"
-    },
-]
-
-EXPECTED_POSTGRES_DEVEL = [
-    {
-        "erratum": "RHSA-2017:1983",
-        "repository": "rhel-7-server-rpms",
-        "package": "postgresql-devel-"
-    },
-    {
-        "erratum": "RHSA-2017:1983",
-        "repository": "rhel-7-workstation-rpms",
-        "package": "postgresql-devel-"
-    },
-    {
-        "erratum": "RHSA-2017:2728",
-        "repository": "rhel-7-server-rpms",
-        "package": "postgresql-devel-"
-    },
-    {
-        "erratum": "RHSA-2017:2728",
-        "repository": "rhel-7-workstation-rpms",
-        "package": "postgresql-devel-"
-    },
-    {
-        "erratum": "RHSA-2017:3402",
-        "repository": "rhel-7-server-rpms",
-        "package": "postgresql-devel-"
-    },
-    {
-        "erratum": "RHSA-2017:3402",
-        "repository": "rhel-7-workstation-rpms",
-        "package": "postgresql-devel-"
-    }
-]
-
-EXPECTED_POSTGRES_DEVEL_W_REPO = [
-    {
-        "erratum": "RHSA-2017:1983",
-        "repository": "rhel-7-server-rpms",
-        "package": "postgresql-devel-"
-    },
-    {
-        "erratum": "RHSA-2017:2728",
-        "repository": "rhel-7-server-rpms",
-        "package": "postgresql-devel-"
-    },
-    {
-        "erratum": "RHSA-2017:3402",
-        "repository": "rhel-7-server-rpms",
-        "package": "postgresql-devel-"
-    },
-]
-
-
-PACKAGES = [
-    # package, expected updates
-    ('bash-0:4.2.46-20.el7_2.x86_64', EXPECTED_BASH),
-    ('postgresql-0:9.2.18-1.el7.x86_64', EXPECTED_POSTGRES),
-    ('postgresql-devel-9.2.18-1.el7.x86_64', EXPECTED_POSTGRES_DEVEL),
-    ('telepathy-logger-0.8.0-5.el7.x86_64', None),
-]
-
-PACKAGES_W_REPOS = [
-    # package, expected updates
-    ('bash-0:4.2.46-20.el7_2.x86_64', EXPECTED_BASH_W_REPO),
-    ('postgresql-0:9.2.18-1.el7.x86_64', EXPECTED_POSTGRES_W_REPO),
-    ('postgresql-devel-9.2.18-1.el7.x86_64', EXPECTED_POSTGRES_DEVEL_W_REPO),
-]
-
-REPOS = [
-    'vmaas-test-1',
-    'rhel-7-server-rpms',
-]
+from vmaas.misc import packages
 
 
 class TestUpdatesAll(object):
     def test_post_multi(self, rest_api):
         """Tests updates using POST with multiple packages."""
-        request_body = tools.gen_updates_body([p[0] for p in PACKAGES])
+        request_body = tools.gen_updates_body([p[0] for p in packages.PACKAGES])
         updates = rest_api.get_updates(body=request_body).response_check()
         schemas.updates_top_schema.validate(updates.raw.body)
-        assert len(updates) == len(PACKAGES)
-        for package_name, expected_updates in PACKAGES:
+        assert len(updates) == len(packages.PACKAGES)
+        for package_name, expected_updates in packages.PACKAGES:
             package = updates[package_name]
             tools.validate_package_updates(package, expected_updates)
 
-    @pytest.mark.parametrize('package_record', PACKAGES, ids=[p[0] for p in PACKAGES])
+    @pytest.mark.parametrize('package_record', packages.PACKAGES, ids=[p[0] for p in packages.PACKAGES])
     def test_post_single(self, rest_api, package_record):
         """Tests updates using POST with single package."""
         name, expected_updates = package_record
@@ -172,7 +28,7 @@ class TestUpdatesAll(object):
         package, = updates
         tools.validate_package_updates(package, expected_updates)
 
-    @pytest.mark.parametrize('package_record', PACKAGES, ids=[p[0] for p in PACKAGES])
+    @pytest.mark.parametrize('package_record', packages.PACKAGES, ids=[p[0] for p in packages.PACKAGES])
     def test_get(self, rest_api, package_record):
         """Tests updates using GET with single package."""
         name, expected_updates = package_record
@@ -186,22 +42,74 @@ class TestUpdatesAll(object):
 class TestUpdatesInRepos(object):
     def test_post_multi(self, rest_api):
         """Tests updates in repos using POST with multiple packages."""
-        request_body = tools.gen_updates_body([p[0] for p in PACKAGES_W_REPOS], repositories=REPOS)
+        request_body = tools.gen_updates_body([p[0] for p in packages.PACKAGES_W_REPOS], repositories=packages.REPOS)
         updates = rest_api.get_updates(body=request_body).response_check()
         schemas.updates_top_repolist_schema.validate(updates.raw.body)
-        assert len(updates) == len(PACKAGES_W_REPOS)
-        for package_name, expected_updates in PACKAGES_W_REPOS:
+        assert len(updates) == len(packages.PACKAGES_W_REPOS)
+        for package_name, expected_updates in packages.PACKAGES_W_REPOS:
             package = updates[package_name]
             tools.validate_package_updates(package, expected_updates)
 
     @pytest.mark.parametrize(
-        'package_record', PACKAGES_W_REPOS, ids=[p[0] for p in PACKAGES_W_REPOS])
+        'package_record', packages.PACKAGES_W_REPOS, ids=[p[0] for p in packages.PACKAGES_W_REPOS])
     def test_post_single(self, rest_api, package_record):
         """Tests updates in repos using POST with single package."""
         name, expected_updates = package_record
-        request_body = tools.gen_updates_body([name], repositories=REPOS)
+        request_body = tools.gen_updates_body([name], repositories=packages.REPOS)
         updates = rest_api.get_updates(body=request_body).response_check()
         schemas.updates_top_repolist_schema.validate(updates.raw.body)
+        assert len(updates) == 1
+        package, = updates
+        tools.validate_package_updates(package, expected_updates)
+
+
+class TestUpdatesFilterRelease(object):
+    """docstring for TestUpdatesFilterRelease"""
+    def test_post_multi(self, rest_api):
+        """Tests updates with filtered release version using POST with multiple packages."""
+        request_body = tools.gen_updates_body(
+            [p[0] for p in packages.PACKAGES_RELEASE_FILTER], releasever='6')
+        updates = rest_api.get_updates(body=request_body).response_check()
+        schemas.updates_top_releasever_schema.validate(updates.raw.body)
+        assert len(updates) == len(packages.PACKAGES_RELEASE_FILTER)
+        for package_name, expected_updates in packages.PACKAGES_RELEASE_FILTER:
+            package = updates[package_name]
+            tools.validate_package_updates(package, expected_updates)
+
+    @pytest.mark.parametrize(
+        'package_record', packages.PACKAGES_RELEASE_FILTER, ids=[p[0] for p in packages.PACKAGES_RELEASE_FILTER])
+    def test_post_single(self, rest_api, package_record):
+        """Tests updates with filtered release version using POST with single package."""
+        name, expected_updates = package_record
+        request_body = tools.gen_updates_body([name], releasever='6')
+        updates = rest_api.get_updates(body=request_body).response_check()
+        schemas.updates_top_releasever_schema.validate(updates.raw.body)
+        assert len(updates) == 1
+        package, = updates
+        tools.validate_package_updates(package, expected_updates)
+
+
+class TestUpdatesFilterBasearch(object):
+    """docstring for TestUpdatesFilterBasearch"""
+    def test_post_multi(self, rest_api):
+        """Tests updates with filtered basearch using POST with multiple packages."""
+        request_body = tools.gen_updates_body(
+            [p[0] for p in packages.PACKAGES_BASEARCH_FILTER], basearch='i386')
+        updates = rest_api.get_updates(body=request_body).response_check()
+        schemas.updates_top_basearch_schema.validate(updates.raw.body)
+        assert len(updates) == len(packages.PACKAGES_BASEARCH_FILTER)
+        for package_name, expected_updates in packages.PACKAGES_BASEARCH_FILTER:
+            package = updates[package_name]
+            tools.validate_package_updates(package, expected_updates)
+
+    @pytest.mark.parametrize(
+        'package_record', packages.PACKAGES_BASEARCH_FILTER, ids=[p[0] for p in packages.PACKAGES_BASEARCH_FILTER])
+    def test_post_single(self, rest_api, package_record):
+        """Tests updates with filtered basearch using POST with single package."""
+        name, expected_updates = package_record
+        request_body = tools.gen_updates_body([name], basearch='i386')
+        updates = rest_api.get_updates(body=request_body).response_check()
+        schemas.updates_top_basearch_schema.validate(updates.raw.body)
         assert len(updates) == 1
         package, = updates
         tools.validate_package_updates(package, expected_updates)

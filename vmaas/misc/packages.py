@@ -135,6 +135,62 @@ EXPECTED_OTHER_REPO = [
     }
 ]
 
+EXPECTED_I386_FILTER_2_2 = [
+    {
+        "basearch": "x86_64",
+        "erratum": "vmaas_test_i386_1.1",
+        "package": "test-arch-vmaas-2-2.i386",
+        "releasever": "7",
+        "repository": "vmaas-test-x86_64"
+    }
+]
+
+EXPECTED_I386_FILTER_3_3 = [
+    {
+        "basearch": "x86_64",
+        "erratum": "vmaas_test_i386_2.1",
+        "package": "test-arch-vmaas-3-3.i386",
+        "releasever": "7",
+        "repository": "vmaas-test-x86_64"
+    }
+]
+
+EXPECTED_BASEARCH_FILTER_1 = [
+    {
+        "basearch": "i386",
+        "erratum": "vmaas_test_i386_1",
+        "package": "test-arch-vmaas-",
+        "repository": "vmaas-test-i386"
+    }
+]
+
+EXPECTED_BASEARCH_FILTER_2 = [
+    {
+        "basearch": "i386",
+        "erratum": "vmaas_test_i386_2",
+        "package": "test-arch-vmaas-",
+        "repository": "vmaas-test-i386"
+    }
+]
+
+EXPECTED_RELEASE_FILTER_1 = [
+    {
+        "erratum": "vmaas_test_i386_1",
+        "package": "test-arch-vmaas-",
+        "releasever": "6",
+        "repository": "vmaas-test-i386"
+    }
+]
+
+EXPECTED_RELEASE_FILTER_2 = [
+    {
+        "erratum": "vmaas_test_i386_2",
+        "package": "test-arch-vmaas-",
+        "releasever": "6",
+        "repository": "vmaas-test-i386"
+    }
+]
+
 PACKAGES_BASIC = [
     # package, expected updates
     ('bash-0:4.2.45-5.el7_0.2.x86_64', EXPECTED_BASH),
@@ -168,4 +224,168 @@ PACKAGES_OTHER_REPO = [
     ('test-vmaas-1-1.x86_64', EXPECTED_OTHER_REPO),
     ('test-vmaas-2-2.x86_64', None),
     ('test-vmaas-3-3.x86_64', None)
+]
+
+PACKAGES_I386_W_FILTER = [
+    ('test-arch-vmaas-1-1.i386', EXPECTED_I386_FILTER_2_2 + EXPECTED_I386_FILTER_3_3),
+    ('test-arch-vmaas-2-2.i386', EXPECTED_I386_FILTER_3_3),
+    ('test-arch-vmaas-3-3.i386', None)
+]
+
+PACKAGES_BASEARCH_FILTER = [
+    ('test-arch-vmaas-1-1.i386', EXPECTED_BASEARCH_FILTER_1 + EXPECTED_BASEARCH_FILTER_2),
+    ('test-arch-vmaas-2-2.i386', EXPECTED_BASEARCH_FILTER_2),
+    ('test-arch-vmaas-3-3.i386', None)
+]
+
+PACKAGES_RELEASE_FILTER = [
+    ('test-arch-vmaas-1-1.i386', EXPECTED_RELEASE_FILTER_1 + EXPECTED_RELEASE_FILTER_2),
+    ('test-arch-vmaas-2-2.i386', EXPECTED_RELEASE_FILTER_2),
+    ('test-arch-vmaas-3-3.i386', None)
+]
+
+
+
+EXPECTED_BASH_PARTIAL = [
+    {
+        "erratum": "RHSA-2017:1931",
+        "repository": "rhel-7-server-rpms",
+        "package": "bash-"
+    },
+    {
+        "erratum": "RHSA-2017:1931",
+        "repository": "rhel-7-workstation-rpms",
+        "package": "bash-"
+    },
+]
+
+EXPECTED_BASH_W_REPO = [
+    {
+        "erratum": "RHSA-2017:1931",
+        "repository": "rhel-7-server-rpms",
+        "package": "bash-"
+    },
+]
+
+EXPECTED_POSTGRES = [
+    {
+        "erratum": "RHSA-2017:3402",
+        "repository": "rhel-7-server-rpms",
+        "package": "postgresql-"
+    },
+    {
+        "erratum": "RHSA-2017:3402",
+        "repository": "rhel-7-workstation-rpms",
+        "package": "postgresql-"
+    },
+    {
+        "erratum": "RHSA-2017:2728",
+        "repository": "rhel-7-server-rpms",
+        "package": "postgresql-"
+    },
+    {
+        "erratum": "RHSA-2017:2728",
+        "repository": "rhel-7-workstation-rpms",
+        "package": "postgresql-"
+    },
+    {
+        "erratum": "RHSA-2017:1983",
+        "repository": "rhel-7-server-rpms",
+        "package": "postgresql-"
+    },
+    {
+        "erratum": "RHSA-2017:1983",
+        "repository": "rhel-7-workstation-rpms",
+        "package": "postgresql-"
+    },
+]
+
+EXPECTED_POSTGRES_W_REPO = [
+    {
+        "erratum": "RHSA-2017:3402",
+        "repository": "rhel-7-server-rpms",
+        "package": "postgresql-"
+    },
+    {
+        "erratum": "RHSA-2017:2728",
+        "repository": "rhel-7-server-rpms",
+        "package": "postgresql-"
+    },
+    {
+        "erratum": "RHSA-2017:1983",
+        "repository": "rhel-7-server-rpms",
+        "package": "postgresql-"
+    },
+]
+
+EXPECTED_POSTGRES_DEVEL = [
+    {
+        "erratum": "RHSA-2017:1983",
+        "repository": "rhel-7-server-rpms",
+        "package": "postgresql-devel-"
+    },
+    {
+        "erratum": "RHSA-2017:1983",
+        "repository": "rhel-7-workstation-rpms",
+        "package": "postgresql-devel-"
+    },
+    {
+        "erratum": "RHSA-2017:2728",
+        "repository": "rhel-7-server-rpms",
+        "package": "postgresql-devel-"
+    },
+    {
+        "erratum": "RHSA-2017:2728",
+        "repository": "rhel-7-workstation-rpms",
+        "package": "postgresql-devel-"
+    },
+    {
+        "erratum": "RHSA-2017:3402",
+        "repository": "rhel-7-server-rpms",
+        "package": "postgresql-devel-"
+    },
+    {
+        "erratum": "RHSA-2017:3402",
+        "repository": "rhel-7-workstation-rpms",
+        "package": "postgresql-devel-"
+    }
+]
+
+EXPECTED_POSTGRES_DEVEL_W_REPO = [
+    {
+        "erratum": "RHSA-2017:1983",
+        "repository": "rhel-7-server-rpms",
+        "package": "postgresql-devel-"
+    },
+    {
+        "erratum": "RHSA-2017:2728",
+        "repository": "rhel-7-server-rpms",
+        "package": "postgresql-devel-"
+    },
+    {
+        "erratum": "RHSA-2017:3402",
+        "repository": "rhel-7-server-rpms",
+        "package": "postgresql-devel-"
+    },
+]
+
+
+PACKAGES = [
+    # package, expected updates
+    ('bash-0:4.2.46-20.el7_2.x86_64', EXPECTED_BASH_PARTIAL),
+    ('postgresql-0:9.2.18-1.el7.x86_64', EXPECTED_POSTGRES),
+    ('postgresql-devel-9.2.18-1.el7.x86_64', EXPECTED_POSTGRES_DEVEL),
+    ('telepathy-logger-0.8.0-5.el7.x86_64', None),
+]
+
+PACKAGES_W_REPOS = [
+    # package, expected updates
+    ('bash-0:4.2.46-20.el7_2.x86_64', EXPECTED_BASH_W_REPO),
+    ('postgresql-0:9.2.18-1.el7.x86_64', EXPECTED_POSTGRES_W_REPO),
+    ('postgresql-devel-9.2.18-1.el7.x86_64', EXPECTED_POSTGRES_DEVEL_W_REPO),
+]
+
+REPOS = [
+    'vmaas-test-1',
+    'rhel-7-server-rpms',
 ]

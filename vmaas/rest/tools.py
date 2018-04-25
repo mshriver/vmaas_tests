@@ -24,7 +24,7 @@ def gen_repos_body(repos):
     return dict(repository_list=repos)
 
 
-def gen_updates_body(packages, repositories=None, modified_since=None):
+def gen_updates_body(packages, repositories=None, modified_since=None, basearch=None, releasever=None):
     """Generates request body for package updates query out of list of packages."""
     body = dict(package_list=packages)
     if repositories:
@@ -33,6 +33,10 @@ def gen_updates_body(packages, repositories=None, modified_since=None):
         if isinstance(modified_since, datetime.datetime):
             modified_since = modified_since.replace(microsecond=0).isoformat()
         body['modified_since'] = modified_since
+    if basearch:
+        body['basearch'] = basearch
+    if releasever:
+        body['releasever'] = releasever
     return body
 
 
@@ -90,7 +94,12 @@ def check_expected_updates(expected_updates, available_updates, exact_match):
 
 def validate_package_updates(package, expected_updates, exact_match=False):
     """Runs checks on response body of 'updates' query."""
-    if not package:
+    if not package and not expected_updates:
+        assert not package.get('description')
+        assert not package.get('summary')
+        return
+
+    if hasattr(package, 'available_updates') and not package.available_updates and not expected_updates:
         return
 
     # check package data using schema
@@ -109,4 +118,5 @@ def validate_package_updates(package, expected_updates, exact_match=False):
         assert len(package.available_updates) == len(expected_updates)
     else:
         assert len(package.available_updates) >= len(expected_updates)
-    check_expected_updates(expected_updates, package.available_updates, exact_match)
+    check_expected_updates(
+        expected_updates, package.available_updates, exact_match)

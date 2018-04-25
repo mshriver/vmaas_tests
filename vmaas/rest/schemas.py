@@ -4,6 +4,7 @@ Schemas of responses.
 """
 
 from schema import Optional, Schema
+from vmaas.utils.blockers import GH
 
 
 _cves = {
@@ -60,6 +61,12 @@ _repos = {
 
 _updates_top = {'update_list': {str: dict}}
 _updates_top_repolist = {'repository_list': [str], 'update_list': {str: dict}}
+_updates_top_basearch = {'basearch': str, 'update_list': {str: dict}}
+
+if GH(241).blocks:
+    _updates_top_releasever = {'relasever': str, 'update_list': {str: dict}}
+else:
+    _updates_top_releasever = {'releasever': str, 'update_list': {str: dict}}
 
 _updates_package = {
     'available_updates': [
@@ -80,4 +87,6 @@ errata_schema = Schema(_errata)
 repos_schema = Schema(_repos)
 updates_top_schema = Schema(_updates_top)
 updates_top_repolist_schema = Schema(_updates_top_repolist)
+updates_top_basearch_schema = Schema(_updates_top_basearch)
+updates_top_releasever_schema = Schema(_updates_top_releasever)
 updates_package_schema = Schema(_updates_package)
