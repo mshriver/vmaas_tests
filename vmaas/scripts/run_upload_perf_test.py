@@ -87,7 +87,7 @@ def _add_servers(parent_element, servers):
         )
 
 
-def _add_load(parent_element, duration, users):
+def _add_load(parent_element, duration, users, one_req_per_user=False):
     load_element = ElementTree.SubElement(
         parent_element,
         'load',
@@ -98,14 +98,14 @@ def _add_load(parent_element, duration, users):
         'arrivalphase',
         {'phase': '1', 'duration': str(duration + 10), 'unit': 'second'}
     )
-    ElementTree.SubElement(
-        phase_element,
-        'users',
-        {'maxnumber': str(users), 'arrivalrate': str(users), 'unit': 'second'}
-    )
+
+    users_data = {'arrivalrate': str(users), 'unit': 'second'}
+    if not one_req_per_user:
+        users_data['maxnumber'] = str(users)
+    ElementTree.SubElement(phase_element, 'users', users_data)
 
 
-def _add_sessions(parent_element, json_files):
+def _add_sessions(parent_element, json_files, one_req_per_user=False):
     sessions_element = ElementTree.SubElement(parent_element, 'sessions')
     for i, json_file in enumerate(json_files):
         session_element = ElementTree.SubElement(
@@ -113,12 +113,18 @@ def _add_sessions(parent_element, json_files):
             'session',
             {'type': 'ts_http', 'weight': '1', 'name': 'updates{}'.format(i)}
         )
-        for_element = ElementTree.SubElement(
-            session_element,
-            'for',
-            {'from': '1', 'to': '2', 'var': 'i', 'incr': '0'}
-        )
-        request_element = ElementTree.SubElement(for_element, 'request')
+
+        if one_req_per_user:
+            requests_parent = session_element
+        else:
+            for_element = ElementTree.SubElement(
+                session_element,
+                'for',
+                {'from': '1', 'to': '2', 'var': 'i', 'incr': '0'}
+            )
+            requests_parent = for_element
+
+        request_element = ElementTree.SubElement(requests_parent, 'request')
         ElementTree.SubElement(
             request_element,
             'http',
@@ -139,13 +145,14 @@ def write_tsung_xml(xml_tree):
         ElementTree.ElementTree(xml_tree).write(f, 'utf-8')
 
 
-def gen_tsung_xml(packages_file, counts_list, clients, servers, duration, users_num):
+def gen_tsung_xml(
+        packages_file, counts_list, clients, servers, duration, users_num, one_req_per_user):
     jsons_list = gen_jsons(packages_file, counts_list)
     top_element = _top_element()
     _add_clients(top_element, clients)
     _add_servers(top_element, servers)
-    _add_load(top_element, duration, users_num)
-    _add_sessions(top_element, jsons_list)
+    _add_load(top_element, duration, users_num, one_req_per_user)
+    _add_sessions(top_element, jsons_list, one_req_per_user)
     write_tsung_xml(top_element)
 
 
@@ -225,7 +232,10 @@ def get_args(args=None):
     parser.add_argument('-p', '--packages_num', type=int, default=1000, metavar='PACKAGES',
                         help='How many packages per request'
                              ' (default: %(default)s)')
-    parser.add_argument('--requests_num', type=int, default=20, metavar='REQUESTS',
+    parser.add_argument('--one-per-user', action='store_true',
+                        help='Send just one request per user per second'
+                             ' (default: %(default)s)')
+    parser.add_argument('--requests-num', type=int, default=20, metavar='REQUESTS',
                         help='How many unique requests to generate'
                              ' (default: %(default)s)')
     return parser.parse_args(args)
@@ -240,7 +250,8 @@ def main(args=None):
         get_clients(args.client),
         get_servers(args.server),
         args.duration,
-        args.users_num
+        args.users_num,
+        args.one_per_user,
     )
     return run_tsung()
 
