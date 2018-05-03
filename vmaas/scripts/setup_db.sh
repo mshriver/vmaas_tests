@@ -21,7 +21,8 @@ wait_task() {
   tmpl_last="docker-compose logs | grep \"<message>\" | tail -n 1 | egrep -o \"([0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2})\"| xargs --no-run-if-empty -0 date +%s -d"
   last=${tmpl_last//<message>/$1}
   while true; do
-    if [ "$(eval $last)" -ge "$tse_before" ]; then
+    tse_last="$(eval $last)"
+    if [ -n "$tse_last" ] && [ "$tse_last" -ge "$tse_before" ]; then
       break
     elif [ $(expr "$(date +%s)" - "$tse_before") -gt $2 ]; then
       break
