@@ -244,8 +244,6 @@ PACKAGES_RELEASE_FILTER = [
     ('test-arch-vmaas-3-3.i386', None)
 ]
 
-
-
 EXPECTED_BASH_PARTIAL = [
     {
         "erratum": "RHSA-2017:1931",

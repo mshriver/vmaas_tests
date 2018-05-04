@@ -67,7 +67,6 @@ class TestUpdatesInRepos(object):
 
 
 class TestUpdatesFilterRelease(object):
-    """docstring for TestUpdatesFilterRelease"""
     def test_post_multi(self, rest_api):
         """Tests updates with filtered release version using POST with multiple packages."""
         request_body = tools.gen_updates_body(
@@ -96,7 +95,6 @@ class TestUpdatesFilterRelease(object):
 
 
 class TestUpdatesFilterBasearch(object):
-    """docstring for TestUpdatesFilterBasearch"""
     def test_post_multi(self, rest_api):
         """Tests updates with filtered basearch using POST with multiple packages."""
         request_body = tools.gen_updates_body(

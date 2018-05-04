@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+Perf test for updates requests.
+"""
 
 import argparse
 import collections
@@ -29,12 +32,14 @@ Server.__new__.__defaults__ = (80,)
 # generate package lists
 
 def load_package_list(packages_file):
+    """Loads list of packages from file."""
     with open(packages_file) as pkgs:
         packages = pkgs.read().splitlines()
     return packages
 
 
 def select_packages(packages, num):
+    """Creates random list of packages."""
     return {random.choice(packages) for __ in range(num)}
 
 
@@ -44,6 +49,7 @@ def gen_packages_query(packages):
 
 
 def gen_jsons(packages_file, counts_list):
+    """Generates JSON files with updates requests."""
     jsons_list = []
     packages = load_package_list(packages_file)
     for i, count in enumerate(counts_list):
@@ -60,11 +66,13 @@ def gen_jsons(packages_file, counts_list):
 # generate tsung XML
 
 def _top_element():
+    """Creates top XML element."""
     top = ElementTree.Element('tsung', {'loglevel': 'warning'})
     return top
 
 
 def _add_clients(parent_element, clients):
+    """Adds clients section to XML."""
     client_element = ElementTree.SubElement(parent_element, 'clients')
     for host, cpu, maxusers in clients:
         attrs = {'host': host, 'cpu': str(cpu), 'maxusers': str(maxusers)}
@@ -78,6 +86,7 @@ def _add_clients(parent_element, clients):
 
 
 def _add_servers(parent_element, servers):
+    """Adds servers section to XML."""
     servers_element = ElementTree.SubElement(parent_element, 'servers')
     for host, port in servers:
         ElementTree.SubElement(
@@ -88,6 +97,7 @@ def _add_servers(parent_element, servers):
 
 
 def _add_load(parent_element, duration, users, one_req_per_user=False):
+    """Adds load section to XML."""
     load_element = ElementTree.SubElement(
         parent_element,
         'load',
@@ -106,6 +116,7 @@ def _add_load(parent_element, duration, users, one_req_per_user=False):
 
 
 def _add_sessions(parent_element, json_files, one_req_per_user=False):
+    """Adds sessions section to XML."""
     sessions_element = ElementTree.SubElement(parent_element, 'sessions')
     for i, json_file in enumerate(json_files):
         session_element = ElementTree.SubElement(
@@ -137,16 +148,19 @@ def _add_sessions(parent_element, json_files, one_req_per_user=False):
 
 
 def write_tsung_xml(xml_tree):
-    with open(TSUNG_XML, 'wb') as f:
-        f.write(
+    """Writes tsung config."""
+    with open(TSUNG_XML, 'wb') as tsung_config:
+        tsung_config.write(
             '<?xml version="1.0" encoding="utf-8"?>'
             '<!DOCTYPE tsung SYSTEM "/usr/share/tsung/tsung-1.0.dtd" []>'.encode('utf8')
         )
-        ElementTree.ElementTree(xml_tree).write(f, 'utf-8')
+        ElementTree.ElementTree(xml_tree).write(tsung_config, 'utf-8')
 
 
+# pylint: disable=too-many-arguments
 def gen_tsung_xml(
         packages_file, counts_list, clients, servers, duration, users_num, one_req_per_user):
+    """Generates tsung config."""
     jsons_list = gen_jsons(packages_file, counts_list)
     top_element = _top_element()
     _add_clients(top_element, clients)
@@ -170,14 +184,17 @@ def _get_objs_list(klass, data):
 
 
 def get_servers(servers):
+    """Gets list of server data."""
     return _get_objs_list(Server, servers)
 
 
 def get_clients(clients):
+    """Gets list of clients data."""
     return _get_objs_list(Client, clients)
 
 
 def get_counts_list(packages_num, requests_num):
+    """Gets list of package numbers per request."""
     return [packages_num for __ in range(requests_num)]
 
 
@@ -189,7 +206,19 @@ def _chdir(target_dir):
     os.chdir(original_dir)
 
 
+def gen_graphs(log_path):
+    """Generates tsung graphs."""
+    with _chdir(log_path):
+        subprocess.run(
+            ['tsung_stats', '--stats', 'tsung.log'],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True
+        )
+
+
 def run_tsung():
+    """Runs tsung process."""
     ret = subprocess.run(
         ['tsung', '-f', TSUNG_XML, '-l', './', 'start'],
         stdout=subprocess.PIPE,
@@ -202,19 +231,13 @@ def run_tsung():
         return 2
 
     log_path = log_path_re.group(1)
-    with _chdir(log_path):
-        subprocess.run(
-            ['tsung_stats', '--stats', 'tsung.log'],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            check=True
-        )
+    gen_graphs(log_path)
     print('Log path: {}'.format(log_path))
     return 0
 
 
 def get_args(args=None):
-    """Get command line arguments."""
+    """Gets command line arguments."""
     parser = argparse.ArgumentParser(description='run_upload_test')
     parser.add_argument('-i', '--packages_file', required=True,
                         help='File with list of rpm files')
