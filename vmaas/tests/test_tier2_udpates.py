@@ -4,6 +4,7 @@ import pytest
 
 from vmaas.misc import packages
 from vmaas.rest import schemas, tools
+from vmaas.utils.blockers import GH
 
 
 class TestUpdatesBasic(object):
@@ -42,6 +43,7 @@ class TestUpdatesBasic(object):
 
 
 class TestUpdateInOtherRepo(object):
+    @pytest.mark.skipif(GH(280).blocks, reason='Blocked by GH 280')
     def test_post_multi(self, rest_api):
         """Tests correct updates in different repo using POST with multiple packages."""
         body = tools.gen_updates_body(
@@ -58,6 +60,8 @@ class TestUpdateInOtherRepo(object):
     def test_post_single(self, rest_api, package):
         """Tests correct updates in different repo using POST with single package."""
         name, expected = package
+        if name in ('test-vmaas-0.3-3.x86_64') and GH(280).blocks:
+            pytest.skip('Blocked by GH 280')
         body = tools.gen_updates_body([name])
         updates = rest_api.get_updates(body=body).response_check()
         schemas.updates_top_schema.validate(updates.raw.body)
@@ -70,6 +74,8 @@ class TestUpdateInOtherRepo(object):
     def test_get_single(self, rest_api, package):
         """Tests correct updates in different repo using GET with single package."""
         name, expected = package
+        if name in ('test-vmaas-0.3-3.x86_64') and GH(280).blocks:
+            pytest.skip('Blocked by GH 280')
         updates = rest_api.get_update(name).response_check()
         schemas.updates_top_schema.validate(updates.raw.body)
         assert len(updates) == 1
@@ -78,6 +84,7 @@ class TestUpdateInOtherRepo(object):
 
 
 class TestUpdateToNoarch(object):
+    @pytest.mark.skipif(GH(280).blocks, reason='Blocked by GH 280')
     def test_post_multi(self, rest_api):
         """Tests correct updates to noarch package using POST with multiple packages."""
         body = tools.gen_updates_body(
@@ -94,6 +101,8 @@ class TestUpdateToNoarch(object):
     def test_post_single(self, rest_api, package):
         """Tests correct updates to noarch package using POST with single package."""
         name, expected = package
+        if name in ('test-vmaas-0.3-3.x86_64') and GH(280).blocks:
+            pytest.skip('Blocked by GH 280')
         body = tools.gen_updates_body([name])
         updates = rest_api.get_updates(body=body).response_check()
         schemas.updates_top_schema.validate(updates.raw.body)
@@ -106,6 +115,8 @@ class TestUpdateToNoarch(object):
     def test_get_single(self, rest_api, package):
         """Tests correct updates to noarch package using GET with single package."""
         name, expected = package
+        if name in ('test-vmaas-0.3-3.x86_64') and GH(280).blocks:
+            pytest.skip('Blocked by GH 280')
         updates = rest_api.get_update(name).response_check()
         schemas.updates_top_schema.validate(updates.raw.body)
         assert len(updates) == 1
@@ -150,6 +161,7 @@ class TestUpdateFromNoarch(object):
 
 
 class TestUpdateI386Filter(object):
+    @pytest.mark.skipif(GH(273).blocks, reason='Blocked by GH 273')
     def test_post_multi(self, rest_api):
         """Tests correct updates from i386 package with basearch set to x86_64
         using POST with multiple packages.
@@ -173,6 +185,8 @@ class TestUpdateI386Filter(object):
         using POST with single package.
         """
         name, expected = package
+        if name in ('test-arch-vmaas-1-1.i386', 'test-arch-vmaas-2-2.i386') and GH(273).blocks:
+            pytest.skip('Blocked by GH 273')
         body = tools.gen_updates_body([name], basearch='x86_64')
         updates = rest_api.get_updates(body=body).response_check()
         schemas.updates_top_basearch_schema.validate(updates.raw.body)
