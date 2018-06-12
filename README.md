@@ -1,6 +1,6 @@
 # VMaaS tests
 
-## Setup
+## Setup Test Test
 
 * install and setup VMaaS following instructions in [VMaaS README](https://github.com/RedHatInsights/vmaas/blob/master/README.md)
 * import repositories data
